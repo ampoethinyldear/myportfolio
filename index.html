@@ -52,6 +52,17 @@
       overflow-x: hidden;
     }
 
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      content: "";
+      background:
+        linear-gradient(115deg, transparent 0%, rgba(255, 248, 242, 0.42) 45%, transparent 70%);
+      animation: pageGlow 12s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
     a {
       color: inherit;
       text-decoration: none;
@@ -124,6 +135,11 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .glass-card:hover {
+      box-shadow: 0 22px 58px rgba(106, 65, 38, 0.18);
     }
 
     /* Header */
@@ -260,6 +276,7 @@
       color: var(--accent-dark);
       font-weight: 750;
       font-size: 1rem;
+      animation: fadeSlideUp 0.75s ease both;
     }
 
     .hero-copy h1 {
@@ -267,6 +284,7 @@
       font-size: clamp(3rem, 7vw, 5.8rem);
       line-height: 0.98;
       letter-spacing: -0.065em;
+      animation: fadeSlideUp 0.85s 0.12s ease both;
     }
 
     .hero-copy h1 span {
@@ -278,12 +296,14 @@
       margin: 24px 0 28px;
       color: var(--muted);
       font-size: 1.02rem;
+      animation: fadeSlideUp 0.85s 0.24s ease both;
     }
 
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
+      animation: fadeSlideUp 0.85s 0.36s ease both;
     }
 
     .hero-visual {
@@ -304,6 +324,7 @@
         radial-gradient(circle at 50% 26%, rgba(255, 243, 232, 0.6), transparent 22%),
         linear-gradient(150deg, #f0d4c2 0%, #d8aa8c 52%, #b87955 100%);
       box-shadow: 0 35px 70px rgba(106, 65, 38, 0.24);
+      animation: portraitFloat 6s ease-in-out infinite;
     }
 
     .portrait-frame::before {
@@ -341,30 +362,6 @@
       font-weight: 800;
     }
 
-    .floating-note {
-      position: absolute;
-      z-index: 2;
-      padding: 13px 16px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      color: var(--muted);
-      background: rgba(255, 248, 242, 0.92);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      font-size: 0.82rem;
-    }
-
-    .floating-note strong {
-      display: block;
-      color: var(--text);
-      font-size: 0.94rem;
-    }
-
-    .note-one {
-      top: 18%;
-      right: -5%;
-    }
-
     /* Projects */
     .projects-grid {
       display: grid;
@@ -376,7 +373,6 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.25s ease, border-color 0.25s ease;
     }
 
     .project-card:hover {
@@ -455,6 +451,12 @@
       font-size: 0.82rem;
       font-weight: 850;
       text-align: left;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .project-link:hover {
+      color: var(--text);
+      transform: translateX(3px);
     }
 
     .project-cover:hover img,
@@ -471,15 +473,19 @@
       position: fixed;
       z-index: 2000;
       inset: 0;
-      display: none;
+      display: grid;
       place-items: center;
       padding: 24px;
       background: rgba(58, 36, 24, 0.68);
       backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
     }
 
     .modal.open {
-      display: grid;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .modal-panel {
@@ -490,6 +496,12 @@
       border-radius: 18px;
       background: var(--surface);
       box-shadow: 0 24px 80px rgba(58, 36, 24, 0.24);
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.24s ease;
+    }
+
+    .modal.open .modal-panel {
+      transform: none;
     }
 
     .modal-header {
@@ -846,6 +858,41 @@
       transform: none;
     }
 
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes portraitFloat {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes pageGlow {
+      from {
+        opacity: 0.35;
+        transform: translateX(-4%);
+      }
+
+      to {
+        opacity: 0.85;
+        transform: translateX(4%);
+      }
+    }
+
     @media (max-width: 1020px) {
       .projects-grid,
       .skills-grid {
@@ -854,10 +901,6 @@
 
       .hero-grid {
         gap: 35px;
-      }
-
-      .note-one {
-        right: 0;
       }
 
     }
@@ -971,10 +1014,6 @@
         flex-direction: column;
       }
 
-      .floating-note {
-        display: none;
-      }
-
       .portrait-frame {
         aspect-ratio: 0.9;
       }
@@ -984,6 +1023,22 @@
       .education-card,
       .education-side {
         padding: 25px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
       }
     }
   </style>
@@ -1033,11 +1088,6 @@
         </div>
 
         <div class="hero-visual reveal">
-          <div class="floating-note note-one">
-            <strong>BS Information Systems</strong>
-            Third-Year Student
-          </div>
-
           <div class="portrait-frame">
             <img src="resources/Profile pic/ethinyl profile pic.jpg" alt="Ethinyl Dear Ampo">
             <div class="portrait-label">Ethinyl Dear Ampo</div>
@@ -1459,7 +1509,8 @@
       { threshold: 0.12 }
     );
 
-    document.querySelectorAll(".reveal").forEach((element) => {
+    document.querySelectorAll(".reveal").forEach((element, index) => {
+      element.style.transitionDelay = `${Math.min(index * 45, 260)}ms`;
       revealObserver.observe(element);
     });
 
